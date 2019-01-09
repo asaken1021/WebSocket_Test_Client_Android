@@ -8,16 +8,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.net.URI;
-
-import javax.websocket.*;
-
-@ClientEndpoint
 public class MainActivity extends AppCompatActivity {
 
-    public static WebSocketContainer webSocketContainer = null;
-    public static URI uri = null;
-    public static Session session = null;
+    public static WebSocketClient client = null;
 
     EditText addressText;
     Button connectButton;
@@ -38,42 +31,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void connect(View v) {
-        webSocketContainer = ContainerProvider.getWebSocketContainer();
-        uri = URI.create(addressText.getText().toString());
+        client = new WebSocketClient();
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    session = webSocketContainer.connectToServer(this, uri);
-                } catch (javax.websocket.DeploymentException e) {
-                    Log.e("WebSocket", "DeploymentException");
-                } catch (java.io.IOException e) {
-                    Log.e("WebSocket", "IOException");
-                }
-            }
-        }).start();
-    }
-
-    @OnOpen
-    public void onOpen(Session session) {
-        Log.d("WebSocket", "セッション確立");
-        statusText.setText("ステータス：接続済");
-    }
-
-    @OnMessage
-    public String onMessage(String message) {
-        Log.d("WebSocket", "メッセージ受信：" + message);
-        return message;
-    }
-
-    @OnClose
-    public void onClose(Session session) {
-        Log.d("WebSocket", "セッション切断");
-    }
-
-    @OnError
-    public void onError(Session session, Throwable th) {
-        Log.d("WebSocket", "セッションエラー");
+        client.connect(addressText.getText().toString());
     }
 }
