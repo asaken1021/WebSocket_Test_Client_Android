@@ -41,13 +41,18 @@ public class MainActivity extends AppCompatActivity {
         webSocketContainer = ContainerProvider.getWebSocketContainer();
         uri = URI.create(addressText.getText().toString());
 
-        try {
-            session = webSocketContainer.connectToServer(this, uri);
-        } catch (javax.websocket.DeploymentException e) {
-            Log.e("WebSocket", "DeploymentException");
-        } catch (java.io.IOException e) {
-            Log.e("WebSocket", "IOException");
-        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    session = webSocketContainer.connectToServer(this, uri);
+                } catch (javax.websocket.DeploymentException e) {
+                    Log.e("WebSocket", "DeploymentException");
+                } catch (java.io.IOException e) {
+                    Log.e("WebSocket", "IOException");
+                }
+            }
+        }).start();
     }
 
     @OnOpen
